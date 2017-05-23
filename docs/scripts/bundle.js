@@ -57,10 +57,10 @@
 	__webpack_require__(6);
 	__webpack_require__(41);
 	__webpack_require__(48);
-	__webpack_require__(54);
-	__webpack_require__(66);
-	__webpack_require__(70);
-	__webpack_require__(74);
+	__webpack_require__(55);
+	__webpack_require__(67);
+	__webpack_require__(71);
+	__webpack_require__(75);
 
 /***/ }),
 /* 2 */
@@ -13109,18 +13109,32 @@
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 	    'use strict';
 	
+	    var d3Format = __webpack_require__(17);
+	
+	    /**
+	     * Calculates percentage of value from total
+	     * @param  {Number}  value    Value to check
+	     * @param  {Number}  total    Sum of values
+	     * @param  {String}  decimals Specifies number of decimals https://github.com/d3/d3-format
+	     * @return {Number}           Percentage
+	     */
+	    function calculatePercent(value, total, decimals) {
+	        return d3Format.format(decimals)(value / total * 100);
+	    }
+	
 	    /**
 	     * Checks if a number is an integer of has decimal values
 	     * @param  {Number}  value Value to check
 	     * @return {Boolean}       If it is an iteger
 	     */
-	
 	    function isInteger(value) {
 	        return value % 1 === 0;
 	    }
 	
 	    return {
+	        calculatePercent: calculatePercent,
 	        isInteger: isInteger
+	
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -19053,11 +19067,14 @@
 	    var textHelper = __webpack_require__(43);
 	    var colorHelper = __webpack_require__(7);
 	
+	    var _require2 = __webpack_require__(31),
+	        calculatePercent = _require2.calculatePercent;
+	
 	    /**
 	     * @typedef DonutChartData
 	     * @type {Object[]}
 	     * @property {Number} quantity     Quantity of the group (required)
-	     * @property {Number} percentage   Percentage of the total (required)
+	     * @property {Number} percentage   Percentage of the total (optional)
 	     * @property {String} name         Name of the group (required)
 	     * @property {Number} id           Identifier for the group required for legend feature (optional)
 	     *
@@ -19098,6 +19115,8 @@
 	     *     .call(donutChart);
 	     *
 	     */
+	
+	
 	    return function module() {
 	
 	        var margin = {
@@ -19144,6 +19163,11 @@
 	        },
 	            sortComparator = function sortComparator(a, b) {
 	            return b.quantity - a.quantity;
+	        },
+	            sumValues = function sumValues(data) {
+	            return data.reduce(function (total, d) {
+	                return d.quantity + total;
+	            }, 0);
 	        },
 	
 	
@@ -19242,10 +19266,12 @@
 	         * @private
 	         */
 	        function cleanData(data) {
+	            var totalQuantity = sumValues(data);
+	
 	            return data.map(function (d) {
 	                d.quantity = +d[quantityLabel];
 	                d.name = String(d[nameLabel]);
-	                d.percentage = String(d[percentageLabel]);
+	                d.percentage = String(d.percentage || calculatePercent(d[quantityLabel], totalQuantity, '.1f'));
 	
 	                return d;
 	            });
@@ -19948,7 +19974,8 @@
 	
 	    var _ = __webpack_require__(3),
 	        jsonFivePlusOther = __webpack_require__(52),
-	        jsonThreeCategories = __webpack_require__(53);
+	        jsonFivePlusOtherNoPercent = __webpack_require__(53),
+	        jsonThreeCategories = __webpack_require__(54);
 	
 	    function DonutDataBuilder(config) {
 	        this.Klass = DonutDataBuilder;
@@ -19957,6 +19984,12 @@
 	
 	        this.withFivePlusOther = function () {
 	            var attributes = _.extend({}, this.config, jsonFivePlusOther);
+	
+	            return new this.Klass(attributes);
+	        };
+	
+	        this.withFivePlusOtherNoPercent = function () {
+	            var attributes = _.extend({}, this.config, jsonFivePlusOtherNoPercent);
 	
 	            return new this.Klass(attributes);
 	        };
@@ -20044,6 +20077,45 @@
 			{
 				"name": "Shiny",
 				"id": 1,
+				"quantity": 86
+			},
+			{
+				"name": "Blazing",
+				"id": 2,
+				"quantity": 300
+			},
+			{
+				"name": "Dazzling",
+				"id": 3,
+				"quantity": 276
+			},
+			{
+				"name": "Radiant",
+				"id": 4,
+				"quantity": 195
+			},
+			{
+				"name": "Sparkling",
+				"id": 5,
+				"quantity": 36
+			},
+			{
+				"name": "Other",
+				"id": 0,
+				"quantity": 814
+			}
+		]
+	};
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+		"data": [
+			{
+				"name": "Shiny",
+				"id": 1,
 				"quantity": 200,
 				"percentage": 20
 			},
@@ -20063,7 +20135,7 @@
 	};
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20072,10 +20144,10 @@
 	    d3Selection = __webpack_require__(4),
 	    d3TimeFormat = __webpack_require__(19),
 	    PubSub = __webpack_require__(5),
-	    brush = __webpack_require__(55),
-	    line = __webpack_require__(58),
+	    brush = __webpack_require__(56),
+	    line = __webpack_require__(59),
 	    tooltip = __webpack_require__(33),
-	    dataBuilder = __webpack_require__(59),
+	    dataBuilder = __webpack_require__(60),
 	    colorSelectorHelper = __webpack_require__(40);
 	
 	function createBrushChart(optionalColorSchema) {
@@ -20290,7 +20362,7 @@
 	}
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -20302,7 +20374,7 @@
 	
 	    var d3Array = __webpack_require__(9);
 	    var d3Axis = __webpack_require__(10);
-	    var d3Brush = __webpack_require__(56);
+	    var d3Brush = __webpack_require__(57);
 	    var d3Ease = __webpack_require__(13);
 	    var d3Scale = __webpack_require__(14);
 	    var d3Shape = __webpack_require__(20);
@@ -20816,12 +20888,12 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// https://d3js.org/d3-brush/ Version 1.0.4. Copyright 2017 Mike Bostock.
 	(function (global, factory) {
-		 true ? factory(exports, __webpack_require__(12), __webpack_require__(57), __webpack_require__(15), __webpack_require__(4), __webpack_require__(22)) :
+		 true ? factory(exports, __webpack_require__(12), __webpack_require__(58), __webpack_require__(15), __webpack_require__(4), __webpack_require__(22)) :
 		typeof define === 'function' && define.amd ? define(['exports', 'd3-dispatch', 'd3-drag', 'd3-interpolate', 'd3-selection', 'd3-transition'], factory) :
 		(factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3,global.d3,global.d3));
 	}(this, (function (exports,d3Dispatch,d3Drag,d3Interpolate,d3Selection,d3Transition) { 'use strict';
@@ -21389,7 +21461,7 @@
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// https://d3js.org/d3-drag/ Version 1.1.0. Copyright 2017 Mike Bostock.
@@ -21618,7 +21690,7 @@
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -22596,7 +22668,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -22605,12 +22677,12 @@
 	    'use strict';
 	
 	    var _ = __webpack_require__(3),
-	        jsonAllDatas = __webpack_require__(60),
-	        jsonFiveTopics = __webpack_require__(61),
-	        jsonOneSource = __webpack_require__(62),
-	        jsonMultiMonthValueRange = __webpack_require__(63),
-	        jsonHourDateRange = __webpack_require__(64),
-	        jsonSmallValueRange = __webpack_require__(65);
+	        jsonAllDatas = __webpack_require__(61),
+	        jsonFiveTopics = __webpack_require__(62),
+	        jsonOneSource = __webpack_require__(63),
+	        jsonMultiMonthValueRange = __webpack_require__(64),
+	        jsonHourDateRange = __webpack_require__(65),
+	        jsonSmallValueRange = __webpack_require__(66);
 	
 	    function LineDataBuilder(config) {
 	        this.Klass = LineDataBuilder;
@@ -22677,7 +22749,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -23084,7 +23156,7 @@
 	};
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -25160,7 +25232,7 @@
 	};
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -25310,7 +25382,7 @@
 	};
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -36307,7 +36379,7 @@
 	};
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -36684,7 +36756,7 @@
 	};
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -36791,15 +36863,15 @@
 	};
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var d3Selection = __webpack_require__(4),
 	    PubSub = __webpack_require__(5),
-	    sparklineChart = __webpack_require__(67),
-	    sparklineDataBuilder = __webpack_require__(68);
+	    sparklineChart = __webpack_require__(68),
+	    sparklineDataBuilder = __webpack_require__(69);
 	
 	function createSparklineChart() {
 	    var sparkline = sparklineChart(),
@@ -36835,7 +36907,7 @@
 	}
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -37234,7 +37306,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -37243,7 +37315,7 @@
 	    'use strict';
 	
 	    var _ = __webpack_require__(3),
-	        jsonOneSource = __webpack_require__(69);
+	        jsonOneSource = __webpack_require__(70);
 	
 	    function SparklineDataBuilder(config) {
 	        this.Klass = SparklineDataBuilder;
@@ -37267,7 +37339,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -37316,16 +37388,16 @@
 	};
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var d3Selection = __webpack_require__(4),
 	    PubSub = __webpack_require__(5),
-	    step = __webpack_require__(71),
+	    step = __webpack_require__(72),
 	    miniTooltip = __webpack_require__(44),
-	    dataBuilder = __webpack_require__(72);
+	    dataBuilder = __webpack_require__(73);
 	
 	function createStepChart() {
 	    var stepChart = step(),
@@ -37376,7 +37448,7 @@
 	}
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -37793,7 +37865,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -37802,7 +37874,7 @@
 	    'use strict';
 	
 	    var _ = __webpack_require__(3),
-	        jsonStepDataSmall = __webpack_require__(73);
+	        jsonStepDataSmall = __webpack_require__(74);
 	
 	    function StepDataBuilder(config) {
 	        this.Klass = StepDataBuilder;
@@ -37826,7 +37898,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports) {
 
 	module.exports = {
@@ -37863,7 +37935,7 @@
 	};
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37871,8 +37943,8 @@
 	var d3Selection = __webpack_require__(4),
 	    d3TimeFormat = __webpack_require__(19),
 	    PubSub = __webpack_require__(5),
-	    brush = __webpack_require__(55),
-	    dataBuilder = __webpack_require__(75);
+	    brush = __webpack_require__(56),
+	    dataBuilder = __webpack_require__(76);
 	
 	function createBrushChart() {
 	    var brushChart = brush(),
@@ -37914,7 +37986,7 @@
 	}
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -37923,7 +37995,7 @@
 	    'use strict';
 	
 	    var _ = __webpack_require__(3),
-	        jsonSimpleData = __webpack_require__(76);
+	        jsonSimpleData = __webpack_require__(77);
 	
 	    function BrushDataBuilder(config) {
 	        this.Klass = BrushDataBuilder;
@@ -37960,7 +38032,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports) {
 
 	module.exports = {
