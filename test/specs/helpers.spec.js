@@ -112,6 +112,10 @@ define([
             it('should return false passed a non integer', () => {
                 expect(common.isInteger(3.2)).toEqual(false);
             });
+
+            it('should calculate percent from value and total', () => {
+                expect(common.calculatePercent(10, 100, '.1f')).toEqual('10.0');
+            });
         });
 
         describe('export chart', () => {
