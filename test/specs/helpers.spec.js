@@ -112,6 +112,15 @@ define([
             it('should return false passed a non integer', () => {
                 expect(common.isInteger(3.2)).toEqual(false);
             });
+
+            it('should calculate percent from value and total', () => {
+                expect(common.calculatePercent(10, 100)).toEqual(10);
+            });
+
+            it('should format input to specified decimal places', () => {
+                expect(common.formatNumber(100, '.1f')).toEqual('100.0');
+                expect(common.formatNumber(100, '.2f')).toEqual('100.00');
+            });
         });
 
         describe('export chart', () => {
